@@ -45,11 +45,6 @@ app.route('/_api/package.json')
       res.type('txt').send(data.toString());
     });
   });
-  
-// app.route('/')
-//     .get(function(req, res) {
-// 		  res.sendFile(process.cwd() + '/views/index.html');
-//     })
 
 app.route('/')
     .get(function(req, res) {
@@ -91,14 +86,6 @@ app.route(/\w/)
         }
       );
       }
-  
-      // res.render(
-      //   'dateView', 
-      //   {
-      //    unix:  moment(dateString).valueOf(),
-      //    natural: moment(dateString).toString(),
-      //   }
-      // );
     })
 
 
