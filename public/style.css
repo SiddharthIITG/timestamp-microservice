@@ -11,10 +11,17 @@ body {
 .container {
 	padding: 0;
 	margin-top: 40px;
+  display: table;
+  margin: 0 auto;
 }
 
 .footer {
 	margin-top: 60px;
+}
+
+.jumbo {
+  width: 50%;
+  margin: 0 auto;
 }
 
 ol {
@@ -26,6 +33,11 @@ ul {
 
 a {
 	color: #2574A9;
+}
+
+pre {
+  text-align: left;
+  font-weight: bold;
 }
 /****** Logo Div Styling ******/
 

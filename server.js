@@ -8,6 +8,12 @@
 var fs = require('fs');
 var express = require('express');
 var app = express();
+var url = require('url');
+var bodyParser = require('body-parser');
+var moment = require('moment');
+const dateRouter = require('./src/routes/dateRoute')();
+const morgan = require('morgan');
+const chalk = require('chalk');
 
 if (!process.env.DISABLE_XORIGIN) {
   app.use(function(req, res, next) {
@@ -22,7 +28,14 @@ if (!process.env.DISABLE_XORIGIN) {
   });
 }
 
+app.use(morgan('dev'));
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(process.cwd() + '/public'));
+
+app.set('json spaces', 2);
+app.set('views', './src/views');
+app.set('view engine', 'ejs');
 
 app.route('/_api/package.json')
   .get(function(req, res, next) {
@@ -32,11 +45,49 @@ app.route('/_api/package.json')
       res.type('txt').send(data.toString());
     });
   });
-  
+
 app.route('/')
     .get(function(req, res) {
-		  res.sendFile(process.cwd() + '/views/index.html');
+		  res.render('index');
     })
+
+app.route(/\w/)
+    .get(function (req,res) {
+      const reqString = url.parse(req.url).path.substring(1);
+      const regexp = /%20/g;
+      var dateString = reqString.replace(regexp, " ");
+      if(moment(Number(dateString)).valueOf()) {
+        var newDateString = moment(Number(dateString)).toString().substr(4);
+        newDateString = newDateString.substr(0, newDateString.length-18);
+        var jsonObj = JSON.stringify(
+        {
+         unix:  Number(dateString),
+         natural: newDateString,
+        }, null, 2);
+        res.render(
+        'dateView', 
+          {
+            jsonObj
+          }
+      );
+      }
+      else if(moment(dateString)) {
+        var newDateString = moment(dateString).toString().substr(4);
+        newDateString = newDateString.substr(0, newDateString.length-18);
+        var jsonObj = JSON.stringify(
+          {
+           unix:  moment(dateString).valueOf(),
+           natural: newDateString,
+          }, null, 2);
+        res.render(
+        'dateView', 
+        {
+         jsonObj
+        }
+      );
+      }
+    })
+
 
 // Respond not found to all the wrong routes
 app.use(function(req, res, next){
@@ -54,6 +105,6 @@ app.use(function(err, req, res, next) {
 })
 
 app.listen(process.env.PORT, function () {
-  console.log('Node.js listening ...');
+  console.log(`Node.js listening on ${chalk.green(500)} ...`);
 });
 
